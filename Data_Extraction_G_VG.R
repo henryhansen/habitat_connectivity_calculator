@@ -467,6 +467,27 @@ full_lh$life.history <- c(rep("Larval",141),
 
 write.csv(full_lh,"extracted_data/lifeHistoryDistances_VG_G.csv")
 
+# create facets labeller for habitat plots --------------------------------
+
+# create labels for plot facets
+discharge_levels <- list(
+  '3'=expression(Discharge ~3 ~ m^3 ~s^-1),
+  '6'=expression(Discharge ~6 ~ m^3 ~s^-1),
+  '9'=expression(Discharge ~9 ~ m^3 ~s^-1),
+  '12'=expression(Discharge ~12 ~ m^3 ~s^-1),
+  '18'=expression(Discharge ~18 ~ m^3 ~s^-1),
+  '27'=expression(Discharge ~27 ~ m^3 ~s^-1),
+  '36'=expression(Discharge ~36 ~ m^3 ~s^-1),
+  '47'=expression(Discharge ~47 ~ m^3 ~s^-1),
+  '57'=expression(Discharge ~57 ~ m^3 ~s^-1),
+  '70'=expression(Discharge ~70 ~ m^3 ~s^-1)
+)
+
+discharge_labeller <- function(variable,value){
+  return(discharge_levels[value])
+}
+
+
 
 # full_lh <- read.csv("extracted_data/lifeHistoryDistances_VG_G.csv")
 # Plot habitat overviews with barriers-----------------------------------------
@@ -493,7 +514,7 @@ quick_full %>%
 vcolor <- viridis(5)
 
 lh_plot <- ggplot(data = quick_full, aes(x = rkm, y = area)) +
-  geom_col(aes(fill = factor(life.history))) +
+  geom_col(aes(fill = factor(life.history)), width = 0.2) +
   geom_rug(data = barriers, 
            aes(x = RKM, colour = "red"), 
            inherit.aes = F, 
@@ -511,8 +532,8 @@ lh_plot <- ggplot(data = quick_full, aes(x = rkm, y = area)) +
                                                        "Spawning" = "#FDE725FF")) +
   # scale_fill_viridis_d(limits = stages) +
   labs(x = "river kilometer (0 = mouth, 53 = headwaters)",
-       y = expression(paste("Area ","m"^"2")),
-       title = expression(paste("Habitats Used Throughout Lifecycle By Discharge m")^"3"/"s")) +
+       y = expression(paste("Area ","m"^"2"))) +
+       # title = expression(paste("Habitats Used Throughout Lifecycle By Discharge m")^"3"/"s")) +
   scale_color_manual(name = "", labels = "Barriers", values ="red") +
   theme_linedraw() +
   theme(panel.grid.minor = element_blank()) +
@@ -520,7 +541,7 @@ lh_plot <- ggplot(data = quick_full, aes(x = rkm, y = area)) +
   theme(legend.position="bottom") +
   coord_cartesian(clip = "off") +
   guides(fill = guide_legend(override.aes = list(colour = NA))) +
-  facet_wrap(~ discharge,nrow = 5)
+  facet_wrap(~ discharge,nrow = 5, labeller = discharge_labeller)
 
 lh_plot
 
@@ -571,9 +592,11 @@ stages <- c("Larval",
             "Summer",
             "Winter",
             "Spawning")
+
+
   
 orig_plot <- ggplot(data = original, aes(x = rkm, y = habitat_area, fill = factor(life.history))) +
-  geom_col(aes(fill = factor(life.history))) +
+  geom_col(aes(fill = factor(life.history)), width = 0.2) +
   geom_rug(data = barriers, 
            aes(x = RKM, colour = "red"), 
            inherit.aes = F, 
@@ -591,8 +614,8 @@ orig_plot <- ggplot(data = original, aes(x = rkm, y = habitat_area, fill = facto
                                                        "Spawning" = "#FDE725FF")) +
   # scale_fill_viridis_d(limits = stages) +
   labs(x = "river kilometer (0 = mouth, 53 = headwaters)",
-       y = expression(paste("Area ","m"^"2")),
-       title = expression(paste("Original Habitats Assessed Throughout River By Discharge m")^"3"/"s")) +
+       y = expression(paste("Area ","m"^"2"))) +
+       # title = expression(paste("Original Habitats Assessed Throughout River By Discharge m")^"3"/"s")) +
   scale_color_manual(name = "", labels = "Barriers", values ="red") +
   theme_linedraw() +
   theme(panel.grid.minor = element_blank()) +
@@ -600,7 +623,7 @@ orig_plot <- ggplot(data = original, aes(x = rkm, y = habitat_area, fill = facto
   theme(legend.position="bottom") +
   coord_cartesian(clip = "off") +
   guides(fill = guide_legend(override.aes = list(colour = NA))) +
-  facet_wrap(~ discharge,nrow = 5)
+  facet_wrap(~ discharge,nrow = 5,labeller = discharge_labeller)
 
 orig_plot
 
